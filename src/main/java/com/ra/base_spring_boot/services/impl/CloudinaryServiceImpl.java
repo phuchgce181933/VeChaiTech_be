@@ -17,11 +17,15 @@ public class CloudinaryServiceImpl implements ICloudinaryService {
     @Override
     public Map upload(MultipartFile file) {
         try {
-            return cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            return cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap(
+                            "resource_type", "auto" //  Cho phép upload ảnh, video, pdf, zip, v.v.
+                    )
+            );
         } catch (IOException e) {
-            throw new RuntimeException("Upload image failed", e);
+            throw new RuntimeException("Upload failed: " + e.getMessage());
         }
-
     }
 
     @Override

@@ -14,6 +14,7 @@ import lombok.*;
 @Builder
 @Table(name = "transactions")
 public class Transactions extends BaseObject {
+
     @Column(name = "latitude")
     private String latitude;
 
