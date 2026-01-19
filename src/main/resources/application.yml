@@ -10,56 +10,36 @@ spring:
       enabled: false
 
   datasource:
-    # url: jdbc:mysql://localhost:3306/base_core?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
-    # username: root
-    # password: 123456
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      register-mbeans: false
-
-  jackson:
-    time-zone: Asia/Ho_Chi_Minh
 
   jpa:
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: hgphuchgce181933@gmail.com
-    password: tqtxxohacfxsrlqi
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
   servlet:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
+
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+  properties:
+    mail.smtp.auth: true
+    mail.smtp.starttls.enable: true
+
 jwt:
   secret:
-    key: Ascmkkqdnmsdfrtgsyuhidj21ue120938219321ndsad
+    key: ${JWT_SECRET}
   expired:
     access: 5
 
-open:
-  api:
-    title: Base Spring Boot API
-    version: 1.0.0
-    description: API documentation for Base Spring Boot project
-    serverUrl: http://localhost:8080
-
 gemini:
   api:
-    key: AIzaSyDDGhsWqlFUx3-Y-mgBV-odx7lit1--baQ
+    key: ${GEMINI_API_KEY}
