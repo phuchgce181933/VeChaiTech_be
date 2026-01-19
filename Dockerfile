@@ -1,12 +1,12 @@
-# Step 1: Build stage
-FROM gradle:8.5-jdk21 AS build
+# ---------- Build Stage ----------
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN ./gradlew bootJar --no-daemon
 
-# Step 2: Run stage
-FROM eclipse-temurin:21-jre
+# ---------- Run Stage ----------
+FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /app/build/libs/*SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
