@@ -47,4 +47,7 @@ public class WalletTransaction extends BaseObject {
 
     @Column(name = "reference_code")
     private String referenceCode; // Mã tham chiếu từ payment gateway
+
+    @Column(name = "order_code", unique = true)
+    private Long orderCode;
 }
