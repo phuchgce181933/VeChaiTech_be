@@ -44,14 +44,17 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
 payos:
-  client-id: ${PAYOS_CLIENT_ID}
-  api-key: ${PAYOS_API_KEY}
-  checksum-key: ${PAYOS_CHECKSUM_KEY}
+  client-id: e767d7c2-2e6d-4918-9196-a7bf65da19dc
+  api-key: 1004d503-d154-4ea1-8bdc-348c6de2a0ed
+  checksum-key: 419a6b86e134f3959ce79bdf30022ca8cb48a055fcaaf05950b97a282c0c7442
+  base-url: https://api-merchant.payos.vn
+  return-url: http://localhost:5173/wallet/success
+  cancel-url: http://localhost:5173/wallet/cancel
 jwt:
   secret:
     key: Ascmkkqdnmsdfrtgsyuhidj21ue120938219321ndsad
   expired:
-    access: 5
+    access: 604800
 
 open:
   api:

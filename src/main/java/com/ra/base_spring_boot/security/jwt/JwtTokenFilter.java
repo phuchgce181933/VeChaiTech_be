@@ -25,28 +25,62 @@ public class JwtTokenFilter extends OncePerRequestFilter
     private final JwtProvider jwtProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
-    {
-        try
-        {
-            String token = getTokenFromRequest(request);
-            if (token != null)
-            {
-                String username = jwtProvider.extractUsername(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                if (jwtProvider.validateToken(token, userDetails) )
-                {
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+
+        // ✅ BỎ QUA PAYOS WEBHOOK
+        if (path.startsWith("/api/payos")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String header = request.getHeader("Authorization");
+
+        // ✅ KHÔNG CÓ JWT → CHO QUA
+        if (header == null || !header.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = header.substring(7);
+
+        // ✅ TOKEN RỖNG
+        if (token.isBlank()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
+            String username = jwtProvider.extractUsername(token);
+
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
+
+                if (jwtProvider.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }
+        } catch (Exception e) {
+            log.error("JWT error: {}", e.getMessage());
         }
-        catch (Exception e)
-        {
-            log.error("Un Authentication {}", e.getMessage());
-        }
+
         filterChain.doFilter(request, response);
     }
+
 
     public String getTokenFromRequest(HttpServletRequest request)
     {

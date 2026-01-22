@@ -55,6 +55,11 @@ public class SecurityConfig
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         url -> url
+                                // ✅ PAYOS webhook – public
+                                .requestMatchers("/api/payos/**").permitAll()
+
+                                // ✅ Wallet – cần đăng nhập
+                                .requestMatchers("/api/v1/wallet/**").authenticated()
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(RoleName.ROLE_ADMIN.toString())
                                 .requestMatchers("/api/v1/user/**").hasAuthority(RoleName.ROLE_CUSTOMER.toString())
                                 .anyRequest().permitAll()
