@@ -20,6 +20,10 @@ public class WalletDepositTransaction extends BaseObject {
     @JoinColumn(name = "wallet_id")
     private WalletRecycler wallet;
 
+    // ✅ THÊM TRỰC TIẾP
+    @Column(name = "recycler_id", nullable = false)
+    private Long recyclerId;
+
     @Column(nullable = false)
     private BigDecimal amount;
 

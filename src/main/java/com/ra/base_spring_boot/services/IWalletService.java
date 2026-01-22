@@ -1,5 +1,7 @@
 package com.ra.base_spring_boot.services;
 
+import java.math.BigDecimal;
+
 public interface IWalletService {
-    void depositSuccess(Long orderCode);
+    void handleDepositSuccess(Long orderCode);
 }

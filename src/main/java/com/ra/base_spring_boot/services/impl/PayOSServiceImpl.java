@@ -52,4 +52,9 @@ public class PayOSServiceImpl implements IPayOSService {
             throw new RuntimeException("Không tạo được link PayOS", e);
         }
     }
+
+    @Override
+    public boolean verifyWebhookSignature(String rawBody, String signature) {
+        return false;
+    }
 }

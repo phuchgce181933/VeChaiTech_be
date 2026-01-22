@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface IPayOSService {
     String createPaymentLink(Long orderCode, BigDecimal amount, String description);
+    boolean verifyWebhookSignature(String rawBody, String signature);
 }

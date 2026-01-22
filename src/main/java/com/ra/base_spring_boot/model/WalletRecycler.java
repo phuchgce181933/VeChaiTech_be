@@ -31,11 +31,21 @@ public class WalletRecycler extends BaseObject {
     @Column(name = "is_active")
     private Boolean isActive; // true = ví hoạt động, false = bị khóa
 
-    public WalletRecycler(User recycler) {
-        this.recycler = recycler;
+    // ✅ constructor cũ
+    public WalletRecycler(User user) {
+        this.recycler = user;
         this.balance = BigDecimal.ZERO;
         this.totalDeposited = BigDecimal.ZERO;
         this.totalSpent = BigDecimal.ZERO;
-        this.isActive = true;
+    }
+
+    // ✅ constructor MỚI – QUAN TRỌNG
+    public WalletRecycler(Long recyclerId) {
+        this.recycler = new User();
+        this.recycler.setId(recyclerId);
+
+        this.balance = BigDecimal.ZERO;
+        this.totalDeposited = BigDecimal.ZERO;
+        this.totalSpent = BigDecimal.ZERO;
     }
 }

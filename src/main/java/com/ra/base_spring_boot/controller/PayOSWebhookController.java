@@ -20,13 +20,15 @@ public class PayOSWebhookController {
     private final IWalletService walletService;
     private final PayOS payOS;
     @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(@RequestBody Webhook webhook) {
-        try {
-            var data = payOS.webhooks().verify(webhook);
-            walletService.depositSuccess(data.getOrderCode());
-            return ResponseEntity.ok("OK");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid webhook");
+    public ResponseEntity<String> webhook(@RequestBody Webhook webhook) {
+
+        var data = payOS.webhooks().verify(webhook);
+
+        // PayOS SUCCESS = code "00"
+        if ("00".equals(data.getCode())) {
+            walletService.handleDepositSuccess(data.getOrderCode());
         }
+
+        return ResponseEntity.ok("OK");
     }
 }
