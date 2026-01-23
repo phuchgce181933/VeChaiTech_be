@@ -27,6 +27,7 @@ repositories {
 
 dependencies {
     //implementation("com.google.cloud:google-cloud-ai-generativelanguage:0.11.0")
+    implementation 'commons-validator:commons-validator:1.8.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'vn.payos:payos-java:2.0.0'
     implementation 'com.cloudinary:cloudinary-http44:1.33.0'

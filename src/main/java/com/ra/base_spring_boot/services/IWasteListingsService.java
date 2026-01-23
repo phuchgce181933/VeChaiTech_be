@@ -18,4 +18,5 @@ public interface IWasteListingsService {
     WasteListings getWasteListingById(Long id);
     WasteListings updateWasteListings(Long id, String name, String description, BigDecimal price, WasteType wasteType, MultipartFile file);
     List<WasteListings> getWasteByRecyclerDemand(Long recyclerDemandId);
+    void deleteWasteListing(Long id);
 }

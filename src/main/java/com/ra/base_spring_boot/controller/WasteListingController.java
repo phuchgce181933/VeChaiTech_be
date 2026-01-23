@@ -64,4 +64,10 @@ public class WasteListingController {
     public List<WasteListings> getByRecyclerDemand(@PathVariable Long recyclerId) {
         return wasteListingsService.getWasteByRecyclerDemand(recyclerId);
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteWasteListing(@PathVariable Long id) {
+        wasteListingsService.deleteWasteListing(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

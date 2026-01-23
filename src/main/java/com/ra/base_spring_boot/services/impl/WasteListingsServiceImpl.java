@@ -19,6 +19,7 @@ import java.util.Map;
 public class WasteListingsServiceImpl implements IWasteListingsService {
     private final IWasteListingRepository iWasteListingRepository;
     private final CloudinaryServiceImpl cloudinaryService;
+
     // respone
     @Override
     public WasteListingsResponse  createWasteListings(WasteListingsRequest request) {
@@ -95,4 +96,14 @@ public class WasteListingsServiceImpl implements IWasteListingsService {
                 .build();
         return iWasteListingRepository.save(wasteListings);
     }
+    @Override
+    public void deleteWasteListing(Long id) {
+        WasteListings waste = iWasteListingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Waste listing not found with id: " + id));
+
+        // Nếu có ảnh Cloudinary / Firebase → xóa ảnh ở đây (optional)
+
+        iWasteListingRepository.delete(waste);
+    }
+
 }
