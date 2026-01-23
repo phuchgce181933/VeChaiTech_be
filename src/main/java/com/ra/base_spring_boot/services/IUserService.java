@@ -1,5 +1,6 @@
 package com.ra.base_spring_boot.services;
 
+import com.ra.base_spring_boot.dto.OrderStatisticDTO;
 import com.ra.base_spring_boot.dto.req.UserUpdateRequest;
 import com.ra.base_spring_boot.model.User;
 
@@ -14,4 +15,5 @@ public interface IUserService {
     void deleteById(Long id);
 
     List<User> getAllUsers();
+
 }

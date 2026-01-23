@@ -74,5 +74,47 @@ public class PayOSWebhookController {
         );
     }
 
+//    @PostMapping("/webhook")
+//    public ResponseEntity<String> handleWebhook(
+//            @RequestBody(required = false) String rawBody
+//    ) {
+//        try {
+//            // PayOS verify webhook (body rỗng)
+//            if (rawBody == null || rawBody.isBlank()) {
+//                return ResponseEntity.ok("OK");
+//            }
+//
+//            JsonNode root = objectMapper.readTree(rawBody);
+//
+//            if (!root.has("signature")) {
+//                return ResponseEntity.ok("OK");
+//            }
+//
+//            JsonNode data = root.get("data");
+//            String signature = root.get("signature").asText();
+//
+//            boolean valid = PayOSSignatureUtil.verify(
+//                    data,
+//                    signature,
+//                    payOSConfig.getChecksumKey()
+//            );
+//
+//            if (!valid) {
+//                return ResponseEntity.status(401).body("Invalid signature");
+//            }
+//
+//            if ("00".equals(root.get("code").asText())) {
+//                walletService.depositSuccess(
+//                        data.get("orderCode").asLong()
+//                );
+//            }
+//
+//            return ResponseEntity.ok("OK");
+//
+//        } catch (Exception e) {
+//            log.error("Webhook error", e);
+//            return ResponseEntity.ok("OK"); // ⚠ KHÔNG trả 500 cho PayOS
+//        }
+//    }
 
 }
