@@ -1,7 +1,7 @@
 package com.ra.base_spring_boot.services.impl;
 
 
-import com.ra.base_spring_boot.model.User;
+import com.ra.base_spring_boot.model.Orders;
 import com.ra.base_spring_boot.model.WalletDepositTransaction;
 import com.ra.base_spring_boot.model.WalletRecycler;
 import com.ra.base_spring_boot.model.WalletTransaction;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,52 +24,50 @@ import java.time.LocalDateTime;
 public class WalletServiceImpl implements IWalletService {
     private final IDepositTransactionRepository depositRepo;
     private final IWalletRecyclerRepository walletRepo;
-    private final IWalletTransactionRepository walletTransactionRepo;
-    private final IWalletRecyclerRepository walletRecyclerRepository;
-
+    private final IWalletTransactionRepository transactionRepo;
     @Override
-    @Transactional
-    public void handleDepositSuccess(Long orderCode) {
+    public void depositSuccess(Long orderCode) {
+        WalletDepositTransaction deposit =
+                depositRepo.findByOrderCode(orderCode)
+                        .orElseThrow(() ->
+                                new RuntimeException("Deposit not found, retry webhook"));
 
-        WalletDepositTransaction deposit = depositRepo.findByOrderCode(orderCode)
-                .orElseThrow(() -> new RuntimeException("Deposit not found"));
+        if (deposit.getStatus() == DepositStatus.SUCCESS) {
+            return;
+        }
 
-        if (deposit.getStatus() == DepositStatus.SUCCESS) return;
-
-        Long recyclerId = deposit.getRecyclerId();
+        WalletRecycler wallet = deposit.getWallet();
         BigDecimal amount = deposit.getAmount();
 
-        // ✅ LẤY HOẶC TẠO WALLET
-        WalletRecycler wallet = walletRepo.findByRecyclerId(recyclerId)
-                .orElseGet(() -> walletRepo.save(new WalletRecycler(recyclerId)));
-
-        // ✅ CỘNG TIỀN
         wallet.setBalance(wallet.getBalance().add(amount));
         wallet.setTotalDeposited(wallet.getTotalDeposited().add(amount));
 
-        // update deposit
         deposit.setStatus(DepositStatus.SUCCESS);
-        deposit.setWallet(wallet);
 
-        // log transaction
-        walletTransactionRepo.save(
-                WalletTransaction.builder()
-                        .wallet(wallet)
-                        .type("DEPOSIT")
-                        .amount(amount)
-                        .status("SUCCESS")
-                        .balanceAfter(wallet.getBalance())
-                        .orderCode(orderCode)
-                        .paymentMethod("PAYOS")
-                        .description("Nạp tiền PayOS")
-                        .transactionDate(LocalDateTime.now())
-                        .build()
-        );
+        WalletTransaction tx = WalletTransaction.builder()
+                .wallet(wallet)
+                .type("DEPOSIT")
+                .amount(amount)
+                .status("SUCCESS")
+                .orderCode(orderCode)
+                .transactionDate(LocalDateTime.now())
+                .build();
 
-        walletRepo.save(wallet);
-        depositRepo.save(deposit);
+        transactionRepo.save(tx);
+    }
 
-        System.out.println("✅ WALLET UPDATED recycler=" + recyclerId + " +" + amount);
+
+    @Override
+    public BigDecimal getBalance(Long recyclerId) {
+        return walletRepo.findByRecyclerId(recyclerId)
+                .map(WalletRecycler::getBalance)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public List<WalletTransaction> getTransactions(Long recyclerId) {
+        return transactionRepo
+                .findByWallet_Recycler_IdOrderByTransactionDateDesc(recyclerId);
     }
 
 }

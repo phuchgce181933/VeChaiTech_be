@@ -34,7 +34,7 @@ public class JwtTokenFilter extends OncePerRequestFilter
         String path = request.getServletPath();
 
         // ✅ BỎ QUA PAYOS WEBHOOK
-        if (path.startsWith("/api/payos")) {
+        if (path.startsWith("/api/payos/webhook")) {
             filterChain.doFilter(request, response);
             return;
         }

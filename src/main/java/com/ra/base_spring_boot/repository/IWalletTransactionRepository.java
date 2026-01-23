@@ -9,14 +9,11 @@ import java.util.Optional;
 
 @Repository
 public interface IWalletTransactionRepository extends JpaRepository<WalletTransaction, Long> {
-    
-    List<WalletTransaction> findByWalletId(Long walletId);
-    
-    List<WalletTransaction> findByWalletIdOrderByTransactionDateDesc(Long walletId);
-    
-    List<WalletTransaction> findByWalletIdAndType(Long walletId, String type);
-    
-    List<WalletTransaction> findByWalletIdAndStatus(Long walletId, String status);
 
+    List<WalletTransaction> findByWallet_IdOrderByTransactionDateDesc(Long walletId);
+    
     Optional<WalletTransaction> findByOrderCode(Long orderCode);
+
+    List<WalletTransaction> findByWallet_Recycler_IdOrderByTransactionDateDesc(Long recyclerId);
+
 }

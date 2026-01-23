@@ -41,6 +41,7 @@ public class WalletController {
                 .orElseGet(() -> walletRepo.save(new WalletRecycler(user)));
 
         Long orderCode = System.currentTimeMillis();
+        System.out.println("CREATE DEPOSIT orderCode = " + orderCode);
 
         // lưu giao dịch nạp (PENDING)
         depositRepo.save(
@@ -65,9 +66,19 @@ public class WalletController {
                 "checkoutUrl", checkoutUrl
         ));
     }
-//    @GetMapping("/recycler/{id}/balance")
-//    public ResponseEntity<?> getBalance(@PathVariable Long id) {
-//        BigDecimal balance = walletService.getBalanceByRecyclerId(id);
-//        return ResponseEntity.ok(Map.of("data", balance));
-//    }
+
+    @GetMapping("/balance")
+    public ResponseEntity<?> balance(@AuthenticationPrincipal MyUserDetails user) {
+        return ResponseEntity.ok(
+                walletService.getBalance(user.getUser().getId())
+        );
+    }
+
+    @GetMapping("/transactions")
+    public ResponseEntity<?> history(@AuthenticationPrincipal MyUserDetails user) {
+        return ResponseEntity.ok(
+                walletService.getTransactions(user.getUser().getId())
+        );
+    }
+
 }
