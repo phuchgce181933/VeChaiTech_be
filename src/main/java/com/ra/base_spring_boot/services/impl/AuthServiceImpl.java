@@ -1,7 +1,9 @@
 package com.ra.base_spring_boot.services.impl;
 
+import com.ra.base_spring_boot.dto.req.ForgotPasswordRequest;
 import com.ra.base_spring_boot.dto.req.FormLogin;
 import com.ra.base_spring_boot.dto.req.FormRegister;
+import com.ra.base_spring_boot.dto.req.ResetPasswordRequest;
 import com.ra.base_spring_boot.dto.resp.JwtResponse;
 import com.ra.base_spring_boot.exception.HttpBadRequest;
 import com.ra.base_spring_boot.model.OtpData;
@@ -108,6 +110,58 @@ public class AuthServiceImpl implements IAuthService
 
         otpStorage.remove(email);
         pendingUsers.remove(email);
+    }
+
+    @Override
+    public void forgotPassword(ForgotPasswordRequest request) {
+        User user;
+
+        if ("SMS".equalsIgnoreCase(request.getDeliveryMethod())) {
+            user = userRepository.findByPhone(request.getIdentifier())
+                    .orElseThrow(() -> new HttpBadRequest("Phone not found"));
+        } else {
+            user = userRepository.findByEmail(request.getIdentifier())
+                    .orElseThrow(() -> new HttpBadRequest("Email not found"));
+        }
+
+        String otp = generateOtp();
+
+        if ("SMS".equalsIgnoreCase(request.getDeliveryMethod())) {
+            smsService.sendOtp(user.getPhone(), otp);
+        } else {
+            emailService.sendOtp(user.getEmail(), otp);
+        }
+
+        otpStorage.put(
+                request.getIdentifier(),
+                new OtpData(otp, System.currentTimeMillis() + 5 * 60 * 1000)
+        );
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        OtpData storedOtp = otpStorage.get(request.getIdentifier());
+
+        if (storedOtp == null ||
+                !storedOtp.getOtp().equals(request.getOtp()) ||
+                storedOtp.getExpiredAt() < System.currentTimeMillis()) {
+            throw new HttpBadRequest("Invalid or expired OTP");
+        }
+
+        User user;
+
+        if (request.getIdentifier().contains("@")) {
+            user = userRepository.findByEmail(request.getIdentifier())
+                    .orElseThrow(() -> new HttpBadRequest("User not found"));
+        } else {
+            user = userRepository.findByPhone(request.getIdentifier())
+                    .orElseThrow(() -> new HttpBadRequest("User not found"));
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        otpStorage.remove(request.getIdentifier());
     }
 
 
