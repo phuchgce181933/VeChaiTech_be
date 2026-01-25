@@ -29,70 +29,95 @@ import java.util.List;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-public class SecurityConfig
-{
+public class SecurityConfig {
+
     private final MyUserDetailsService userDetailsService;
     private final JwtEntryPoint jwtEntryPoint;
     private final AccessDenied accessDenied;
     private final JwtTokenFilter jwtTokenFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-    {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cf -> cf.configurationSource(request ->
-                {
+                // ===== CORS =====
+                .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:5173",   // Vite React
-    "http://localhost:3000",   // Create React App
-    "http://localhost:8080")); // phụ thuộc vào port clents
-                    config.setAllowedMethods(List.of("*"));
-                    config.setAllowCredentials(true);
+
+                    // ✅ FIX: cho phép mọi domain (Render + local)
+                    config.setAllowedOriginPatterns(List.of("*"));
+
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setExposedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
+
                     return config;
                 }))
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        url -> url
-                                // ✅ PAYOS webhook – public
-                                .requestMatchers("/api/payos/**").permitAll()
 
-                                // ✅ Wallet – cần đăng nhập
-                                .requestMatchers("/api/v1/wallet/**").authenticated()
-                                .requestMatchers("/api/v1/admin/**").hasAuthority(RoleName.ROLE_ADMIN.toString())
-                                .requestMatchers("/api/v1/user/**").hasAuthority(RoleName.ROLE_CUSTOMER.toString())
-                                .anyRequest().permitAll()
+                // ===== CSRF =====
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // ===== AUTH RULES =====
+                .authorizeHttpRequests(auth -> auth
+                        // public
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/posts/**",
+                                "/api/payos/**",
+                                "/error"
+                        ).permitAll()
+
+                        // role-based
+                        .requestMatchers("/api/v1/admin/**")
+                        .hasAuthority(RoleName.ROLE_ADMIN.toString())
+
+                        .requestMatchers("/api/v1/user/**")
+                        .hasAuthority(RoleName.ROLE_CUSTOMER.toString())
+
+                        .requestMatchers("/api/v1/wallet/**")
+                        .authenticated()
+
+                        // other
+                        .anyRequest().permitAll()
                 )
+
+                // ===== SESSION =====
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // ===== EXCEPTION =====
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtEntryPoint)
+                        .accessDeniedHandler(accessDenied)
+                )
+
+                // ===== PROVIDER + FILTER =====
                 .authenticationProvider(authenticationProvider())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(
-                        exception -> exception
-                                .authenticationEntryPoint(jwtEntryPoint)
-                                .accessDeniedHandler(accessDenied)
-                )
-                .addFilterAfter(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .build();
     }
 
+    // ===== PASSWORD =====
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // ===== AUTH PROVIDER =====
     @Bean
-    public AuthenticationProvider authenticationProvider()
-    {
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
+    // ===== AUTH MANAGER =====
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception
-    {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration auth)
+            throws Exception {
         return auth.getAuthenticationManager();
     }
 }
