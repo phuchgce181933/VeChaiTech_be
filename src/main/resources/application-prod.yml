@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: base_spring_boot
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # prod tạm thời, sau có thể đổi validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+payos:
+  client-id: ${PAYOS_CLIENT_ID}
+  api-key: ${PAYOS_API_KEY}
+  checksum-key: ${PAYOS_CHECKSUM_KEY}
+  base-url: https://api-merchant.payos.vn
+  return-url: ${PAYOS_RETURN_URL}
+  cancel-url: ${PAYOS_CANCEL_URL}
+
+jwt:
+  secret:
+    key: ${JWT_SECRET}
+  expired:
+    access: 604800
+
+open:
+  api:
+    title: Base Spring Boot API (PROD)
+    version: 1.0.0
+    serverUrl: ${SERVER_URL}
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}

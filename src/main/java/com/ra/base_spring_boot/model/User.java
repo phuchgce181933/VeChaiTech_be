@@ -13,6 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@Table(name = "users")
 public class User extends BaseObject
 {
     @Column(name = "full_name")
