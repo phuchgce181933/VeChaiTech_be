@@ -43,10 +43,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
 
-                    // ✅ FIX: cho phép mọi domain (Render + local)
-                    config.setAllowedOriginPatterns(List.of("*"));
+                    config.setAllowedOrigins(List.of(
+                            "http://localhost:5173",
+                            "http://127.0.0.1:5173",
+                            "https://6356816b4c41.ngrok-free.app"
+                    ));
 
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedMethods(List.of(
+                            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+                    ));
                     config.setAllowedHeaders(List.of("*"));
                     config.setExposedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
@@ -54,32 +59,15 @@ public class SecurityConfig {
                     return config;
                 }))
 
+
                 // ===== CSRF =====
                 .csrf(AbstractHttpConfigurer::disable)
 
                 // ===== AUTH RULES =====
                 .authorizeHttpRequests(auth -> auth
-                        // public
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/api/v1/posts/**",
-                                "/api/payos/**",
-                                "/error"
-                        ).permitAll()
-
-                        // role-based
-                        .requestMatchers("/api/v1/admin/**")
-                        .hasAuthority(RoleName.ROLE_ADMIN.toString())
-
-                        .requestMatchers("/api/v1/user/**")
-                        .hasAuthority(RoleName.ROLE_CUSTOMER.toString())
-
-                        .requestMatchers("/api/v1/wallet/**")
-                        .authenticated()
-
-                        // other
                         .anyRequest().permitAll()
                 )
+
 
                 // ===== SESSION =====
                 .sessionManagement(session ->
