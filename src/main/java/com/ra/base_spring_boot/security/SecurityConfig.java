@@ -46,7 +46,8 @@ public class SecurityConfig {
                     config.setAllowedOrigins(List.of(
                             "http://localhost:5173",
                             "http://127.0.0.1:5173",
-                            "https://6356816b4c41.ngrok-free.app"
+                            "https://vechaitech.io.vn",
+                            "http://vechaitech.io.vn"
                     ));
 
                     config.setAllowedMethods(List.of(

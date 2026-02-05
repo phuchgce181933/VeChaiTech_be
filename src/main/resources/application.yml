@@ -1,6 +1,6 @@
 spring:
-#  profiles:
-#    active: dev
+  #  profiles:
+  #    active: dev
   application:
     name: base_spring_boot
     admin:
@@ -11,11 +11,11 @@ spring:
     restart:
       enabled: false
   datasource:
-    url: jdbc:mysql://localhost:3306/base_core?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
-#    url: jdbc:mysql://root:kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi@mainline.proxy.rlwy.net:19116/railway?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
-    username: root
-#    password: kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi
-    password: 123456
+    url: jdbc:mysql://localhost:3306/nhvecjqt_VeChaiTech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+    #    url: jdbc:mysql://root:kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi@mainline.proxy.rlwy.net:19116/railway?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: nhvecjqt_wed
+    #    password: kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi
+    password: 12072004Phuc@
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       register-mbeans: false
@@ -65,7 +65,7 @@ open:
     title: Base Spring Boot API
     version: 1.0.0
     description: API documentation for Base Spring Boot project
-    serverUrl: http://localhost:8080
+    serverUrl: http://103.124.94.58:8080
 
 gemini:
   api:
