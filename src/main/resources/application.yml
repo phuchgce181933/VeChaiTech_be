@@ -11,11 +11,14 @@ spring:
     restart:
       enabled: false
   datasource:
-    url: jdbc:mysql://localhost:3306/nhvecjqt_VeChaiTech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+    url: jdbc:mysql://103.124.94.58:3306/nhvecjqt_VeChaiTech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
     #    url: jdbc:mysql://root:kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi@mainline.proxy.rlwy.net:19116/railway?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
-    username: nhvecjqt_wed
-    #    password: kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi
-    password: 12072004Phuc@
+#    url: jdbc:mysql://localhost:3306/base_core?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: appuser
+#    username: root
+#        password: kGZEMMSYZXQFAJsTbTYUlvSOpaFTLLvi
+    password: 12072004Phuc@Phucdz
+#    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       register-mbeans: false
@@ -52,8 +55,8 @@ payos:
   api-key: 1004d503-d154-4ea1-8bdc-348c6de2a0ed
   checksum-key: 419a6b86e134f3959ce79bdf30022ca8cb48a055fcaaf05950b97a282c0c7442
   base-url: https://api-merchant.payos.vn
-  return-url: http://localhost:5173/wallet/success
-  cancel-url: http://localhost:5173/wallet/cancel
+  return-url: https://vechaitech.io.vn/wallet/success
+  cancel-url: https://vechaitech.io.vn/wallet/cancel
 jwt:
   secret:
     key: Ascmkkqdnmsdfrtgsyuhidj21ue120938219321ndsad

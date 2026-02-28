@@ -52,9 +52,19 @@ public class WalletServiceImpl implements IWalletService {
                 .orderCode(orderCode)
                 .transactionDate(LocalDateTime.now())
                 .build();
-
+        walletRepo.save(wallet);
+        depositRepo.save(deposit);
         transactionRepo.save(tx);
     }
+
+    @Override
+    public boolean isPaid(Long orderCode) {
+        return transactionRepo
+                .findByOrderCode(orderCode)
+                .map(tx -> "SUCCESS".equals(tx.getStatus()))
+                .orElse(false);
+    }
+
 
 
     @Override

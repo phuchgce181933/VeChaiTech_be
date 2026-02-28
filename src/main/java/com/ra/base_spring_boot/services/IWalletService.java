@@ -15,7 +15,7 @@ public interface IWalletService {
      * - Tạo WalletTransaction
      */
     void depositSuccess(Long orderCode);
-
+    boolean isPaid(Long orderCode);
     /**
      * Lấy số dư ví hiện tại của recycler
      */

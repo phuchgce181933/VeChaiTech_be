@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.Webhook;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -26,8 +27,13 @@ public class PayOSWebhookController {
     private final PayOSConfig payOSConfig;
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(@RequestBody String rawBody) {
+    public ResponseEntity<String> handleWebhook(@RequestBody(required = false) String rawBody) {
         try {
+
+            if (rawBody == null || rawBody.isBlank()) {
+                return ResponseEntity.ok("OK");
+            }
+
             JsonNode root = objectMapper.readTree(rawBody);
 
             if (!root.has("signature")) {
@@ -37,14 +43,16 @@ public class PayOSWebhookController {
             JsonNode data = root.get("data");
             String signature = root.get("signature").asText();
 
-            if (!PayOSSignatureUtil.verify(
+            boolean valid = PayOSSignatureUtil.verify(
                     data,
                     signature,
                     payOSConfig.getChecksumKey()
-            )) {
-                return ResponseEntity.status(401).body("Invalid signature");
-            }
+            );
 
+            if (!valid) {
+                log.warn("Invalid signature");
+                return ResponseEntity.ok("OK"); // ⚠ Không trả 401
+            }
 
             if ("00".equals(root.get("code").asText())) {
                 walletService.depositSuccess(
@@ -54,15 +62,9 @@ public class PayOSWebhookController {
 
             return ResponseEntity.ok("OK");
 
-        } catch (RuntimeException e) {
-            // nghiệp vụ chưa sẵn sàng → retry
-            log.warn("Webhook retry needed: {}", e.getMessage());
-            return ResponseEntity.status(400).body("Retry later");
-
         } catch (Exception e) {
-            // lỗi thật
             log.error("Webhook error", e);
-            return ResponseEntity.status(500).body("Server error");
+            return ResponseEntity.ok("OK"); // ⚠ luôn trả 200
         }
     }
 
@@ -73,7 +75,14 @@ public class PayOSWebhookController {
                 "Webhook endpoint is alive. POST only."
         );
     }
+    @GetMapping("/wallet/check")
+    public ResponseEntity<?> check(@RequestParam Long orderCode) {
+        boolean paid = walletService.isPaid(orderCode);
 
+        return ResponseEntity.ok(
+                Map.of("status", paid ? "PAID" : "PENDING")
+        );
+    }
 //    @PostMapping("/webhook")
 //    public ResponseEntity<String> handleWebhook(
 //            @RequestBody(required = false) String rawBody
